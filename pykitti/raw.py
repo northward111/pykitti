@@ -103,7 +103,11 @@ class raw:
         return utils.yield_velo_scans(self.velo_files)
 
     def get_velo(self, idx):
-        """Read velodyne [x,y,z,reflectance] scan at the specified index."""
+        """
+        Read velodyne [x,y,z,reflectance] scan at the specified index.
+        :param idx:
+        :return:(n,4) [x,y,z,intensity]
+        """
         return utils.load_velo_scan(self.velo_files[idx])
 
     def _get_file_lists(self):
@@ -187,6 +191,9 @@ class raw:
         data['R_rect_30'] = R_rect_30
 
         # Compute the rectified extrinsics from cam0 to camN
+        # the item at index[0,3] is minus baseline length(baseline is relative to the No.0 reference camera)
+        # here we decompose P_rect_i0 into Ki @ Ti, Ki is the camera intrinsic matrix and
+        # Ti is the matrix whose [0,3] item is minus baseline length(baseline is relative to the No.0 reference camera)
         T0 = np.eye(4)
         T0[0, 3] = P_rect_00[0, 3] / P_rect_00[0, 0]
         T1 = np.eye(4)
